@@ -1,2 +1,2 @@
 # VortV
-Vort™ Game Engine V5 Development Repository
+© 2024 Beyond Earth Studios. All rights reserved.
