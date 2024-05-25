@@ -1,0 +1,10 @@
+<!DOCTYPE RCC>
+<RCC version="1.0">
+    <qresource prefix="icons">
+        <file alias="logo.jpg">assets/images/logo.jpg</file>
+    </qresource>
+    <qresource prefix="fonts">
+        <file alias="DiaryOfAn8BitMage.ttf">assets/fonts/DiaryOfAn8BitMage.ttf</file>
+	<file alias="Xolonium-Regular.otf">assets/fonts/Xolonium-Regular.otf</file>
+    </qresource>
+</RCC>
