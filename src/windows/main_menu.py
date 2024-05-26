@@ -15,12 +15,11 @@ from PySide6.QtWidgets import QVBoxLayout, QWidget, QPushButton, QLabel
 class MainMenu(QWidget):
 
     switch_window = Signal(None)
+    open_game = Signal(None)
 
     def load_game(self):
         log("Game window opened", False)
-        self.maingame = Game()
-        self.maingame.show()
-        #runtime_resize(self.maingame)
+        self.open_game.emit()
         self.close()
 
     def open_settings(self):
