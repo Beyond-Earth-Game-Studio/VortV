@@ -1,4 +1,4 @@
-def stylize(target):
+def stylize(target) -> None:
 
     style = (
 

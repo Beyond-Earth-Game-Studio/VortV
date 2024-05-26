@@ -5,6 +5,8 @@ from enum import Enum
 
 import engine.manager
 
+from utils.window_resize import initial_resize
+
 from PySide6.QtGui import QImage,QPixmap
 from PySide6.QtWidgets import QApplication,QGraphicsScene,QGraphicsView,QLabel,QGraphicsPixmapItem
 
@@ -26,7 +28,8 @@ class my_house(QGraphicsView):
         self.screen_width = screen_width
         self.screen_height = screen_height
         self.setScene(QGraphicsScene())  
-        self.showMaximized()
+
+        initial_resize(self, 'settings window')
       
         self.world_map = world_map
         self.buffer = QImage(screen_height, screen_width, QImage.Format_ARGB32)
@@ -37,7 +40,6 @@ class my_house(QGraphicsView):
         self.texWidth = self.textures[0].width()
         self.texHeight = self.textures[0].height()
     
-             
         self.cell_and_floor = False
         self.bg = QPixmap(self.system.get_zone_images())
         self.bg = self.bg.scaled(700,600)
@@ -149,6 +151,7 @@ class my_house(QGraphicsView):
                 else:
                     perp_wall_dist = (map_y - self.cam.player_pos_y + (1 - step_y) / 2) / ray_dir_y
                     wall_x = self.cam.player_pos_x + perp_wall_dist * ray_dir_x
+                
                 wall_x -= int(wall_x)
 
                 # Calculate value of tex_x
@@ -175,7 +178,6 @@ class my_house(QGraphicsView):
                     color_index = tex_y * texture.bytesPerLine() + tex_x * 4
                     color = texture_bits[color_index:color_index + 4]
                    
-
                     # Perform bitwise operations to darken color if is side
                     if side == 1:
                         modified_color = memoryview(bytearray(color))
@@ -183,9 +185,9 @@ class my_house(QGraphicsView):
                         modified_color[1] = (modified_color[1] >> 1) & 0xFF
                         modified_color[2] = (modified_color[2] >> 1) & 0xFF
                     
-                       
                         modified_color = int.from_bytes(modified_color, byteorder='little')
                         self.buffer.setPixel(x,y,modified_color)
+
                     else:
                         color=int.from_bytes(color,byteorder="little")
                         self.buffer.setPixel(x,y,color)
@@ -193,7 +195,6 @@ class my_house(QGraphicsView):
 
     def keyPressEvent(self,event): # Take key input and change values. 
     
-                self.key = event.key()
-                #cam = engine.manager.map_manage().tony
-                self.cam.move(self.key,self.world_map)
-                self.render_frame()   
+        self.key = event.key()
+        self.cam.move(self.key,self.world_map)
+        self.render_frame()   

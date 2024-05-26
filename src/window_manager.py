@@ -31,7 +31,8 @@ class WindowManager():
         splash_screen.finish(self.main_menu)
 
     def open_menu(self):
-        #self.main_menu = MainMenu() # this is only needed if you dereference it in open_settings
+        # this is only needed if you dereference it in open_settings as run_splash should always be called first
+        #self.main_menu = MainMenu() 
         self.main_menu.switch_window.connect(self.open_settings)
         self.main_menu.open_game.connect(self.load_game)
         self.main_menu.show()

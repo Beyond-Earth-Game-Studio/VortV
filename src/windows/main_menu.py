@@ -28,8 +28,7 @@ class MainMenu(QWidget):
         self.close()
 
     def exit(self):
-        self.settings_window = None
-        #self.settings_window.close()
+        log("User requested exit", False)
         self.close()
 
     def refresh(self):
