@@ -1,7 +1,6 @@
 import sys
 import resources
 
-from time import sleep
 from datetime import datetime
 
 from globals import fonts
@@ -9,11 +8,11 @@ from globals import fonts
 from utils.style import stylize
 from utils.logger import logging_init, logging_exit, log
 
-from windows.main_menu import MainMenu
+from window_manager import WindowManager
 
-from PySide6.QtCore import Qt, QSettings
-from PySide6.QtGui import QFont, QFontDatabase, QPixmap
-from PySide6.QtWidgets import QApplication, QSplashScreen
+from PySide6.QtGui import QFont
+from PySide6.QtCore import QSettings
+from PySide6.QtWidgets import QApplication
 
 if __name__ == "__main__":
 
@@ -38,23 +37,14 @@ if __name__ == "__main__":
         primary_font = fonts()[0]
         QApplication.setFont(QFont(primary_font, 10))
 
-        # splash screen (must be after font stuff)
-        splash = QPixmap(":/icons/logo.jpg")
-        splash_screen = QSplashScreen(splash)
-        splash_screen.show()
-        splash_screen.showMessage("Loading Assets", alignment=Qt.AlignBottom, color=Qt.white)
-        sleep(2)
-        splash_screen.showMessage("Loading Game", alignment=Qt.AlignBottom, color=Qt.white)
-        sleep(2)
-
         # fusion is a built-in Qt theme
         app.setStyle('Fusion')
         stylize(app)  # using css from style.py, works across modules :)
 
-        # prepare for run
-        menu = MainMenu()
-        splash_screen.finish(menu)
-        menu.show()
+        # init window manger
+        window_manager = WindowManager()
+        window_manager.run_splash()
+        window_manager.open_menu()
 
         # run
         app.exec()

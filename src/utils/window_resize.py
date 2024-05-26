@@ -5,7 +5,7 @@ from PySide6.QtCore import QSettings
 settings = QSettings("Beyond Earth Studios", "VortV")
 
 def initial_resize(target_window, target_window_name) -> None:
-    forced = check()
+    forced = check(False)
     if forced:
         target_window.setGeometry(settings.value("geometry"))
         if settings.value("target size") is not None:

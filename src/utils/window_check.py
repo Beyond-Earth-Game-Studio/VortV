@@ -3,7 +3,7 @@ from PySide6.QtCore import QSettings
 
 settings = QSettings("Beyond Earth Studios", "VortV")
 
-def check() -> bool:
+def check(init: bool) -> bool:
     """
     Checks if window size is forced or autoscaled
     """
@@ -16,11 +16,12 @@ def check() -> bool:
         settings.setValue("forced size", 0)
 
     else:
-        log(f'Is forced size: {forced}', True)
+        if init:
+            log(f'Is forced size: {forced}', True)
 
-        if settings.value("target size") is not None:
-            log(f'Target Size: {settings.value("target size")}', False)
-        else:
-            log('Target Size: Unknown, please change window size once', False)
+            if settings.value("target size") is not None:
+                log(f'Target Size: {settings.value("target size")}', False)
+            else:
+                log('Target Size: Unknown, please change window size once', False)
 
         return forced

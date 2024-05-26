@@ -8,28 +8,29 @@ from utils.window_check import check
 from utils.window_resize import initial_resize, runtime_resize
 from windows.settings_menu import SettingsWindow
 
-from PySide6.QtCore import Qt, QTimer, QSettings
-from PySide6.QtGui import QIcon, QFont, QFontDatabase
+from PySide6.QtGui import QIcon, QFont
+from PySide6.QtCore import Qt, QTimer, QSettings, Signal
 from PySide6.QtWidgets import QVBoxLayout, QWidget, QPushButton, QLabel
 
 class MainMenu(QWidget):
+
+    switch_window = Signal(None)
 
     def load_game(self):
         log("Game window opened", False)
         self.maingame = Game()
         self.maingame.show()
-        runtime_resize(self.maingame)
+        #runtime_resize(self.maingame)
         self.close()
 
     def open_settings(self):
         log("Settings window opened", False)
-        self.settings_window = SettingsWindow()
-        self.settings_window.show()
-        #runtime_resize(self.settings_window)
+        self.switch_window.emit()
+        self.close()
 
     def exit(self):
-        self.settings_window = SettingsWindow()
-        self.settings_window.close()
+        self.settings_window = None
+        #self.settings_window.close()
         self.close()
 
     def refresh(self):
@@ -40,13 +41,9 @@ class MainMenu(QWidget):
         super().__init__()
 
         # init variables
-        forced = check()
+        forced = check(True)
         title_font = fonts()[1]
         settings = QSettings("Beyond Earth Studios", "VortV")
-
-        # Ensure opening of new windows
-        #self.settings_window = None
-        #self.maingame = None
 
         initial_resize(self, 'main menu')
 

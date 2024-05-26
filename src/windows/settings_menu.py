@@ -6,16 +6,16 @@ from utils.window_check import check
 from utils.window_center import center
 from utils.window_resize import initial_resize
 
-#from windows.main_menu import MainMenu
-
+from PySide6.QtGui import QIcon, QFont
 from PySide6.QtCore import Qt, QSettings, Signal
-from PySide6.QtGui import QIcon, QFont, QFontDatabase
 from PySide6.QtWidgets import QVBoxLayout, QWidget, QPushButton, QRadioButton, QComboBox, QMessageBox, \
     QGroupBox
 
 settings = QSettings("Beyond Earth Studios", "VortV")
 
 class SettingsWindow(QWidget):
+
+    switch_window = Signal(None)
 
     def set_log(self):
 
@@ -36,6 +36,7 @@ class SettingsWindow(QWidget):
 
     def open_menu(self):
         log("Menu window opened", False)
+        self.switch_window.emit()
         self.close()
 
     def window_size(self, size):
@@ -70,7 +71,7 @@ class SettingsWindow(QWidget):
             self.resize(3840, 2160)
             settings.setValue("forced size", 1)
 
-        forced = check()
+        forced = check(False)
 
         if forced:
             center(self)  # seems to screw with autoscale on linux
@@ -109,12 +110,9 @@ class SettingsWindow(QWidget):
 
         super().__init__()
 
-        forced = check()
+        forced = check(False)
         primary_font = fonts()[0]
         log_level = settings.value("log_level")
-
-        # Ensure opening of new window
-        #self.menu = None
 
         initial_resize(self, 'settings window')
 
