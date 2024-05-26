@@ -14,6 +14,7 @@ def check(init: bool) -> bool:
 
     if forced is None:
         settings.setValue("forced size", 0)
+        forced = bool(int(settings.value("forced size")))
 
     else:
         if init:

@@ -1,10 +1,12 @@
 ## Custom Stuff
 
-# Nuitka
+# Nuitka/pyside-deploy
 *.onefile-build/
 *.dist/
 *.build/
 *.exe
+pysidedeploy.spec
+deployment/
 
 # Github
 .github/
