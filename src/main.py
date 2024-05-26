@@ -4,6 +4,8 @@ import resources
 from time import sleep
 from datetime import datetime
 
+from globals import fonts
+
 from utils.style import stylize
 from utils.logger import logging_init, logging_exit, log
 
@@ -33,7 +35,7 @@ if __name__ == "__main__":
         logging_init(True)
 
         # font stuff
-        primary_font = QFontDatabase.applicationFontFamilies(QFontDatabase.addApplicationFont(':/fonts/Xolonium-Regular.otf'))[0]
+        primary_font = fonts()[0]
         QApplication.setFont(QFont(primary_font, 10))
 
         # splash screen (must be after font stuff)

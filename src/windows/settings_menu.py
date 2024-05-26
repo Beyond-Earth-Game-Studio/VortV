@@ -1,8 +1,10 @@
 import resources
 
+from globals import fonts
 from utils.logger import log
 from utils.window_check import check
 from utils.window_center import center
+from utils.window_resize import initial_resize
 
 #from windows.main_menu import MainMenu
 
@@ -38,12 +40,10 @@ class SettingsWindow(QWidget):
 
     def window_size(self, size):
 
-        primary_font = QFontDatabase.applicationFontFamilies(QFontDatabase.addApplicationFont(':/fonts/Xolonium-Regular.otf'))[0]
+        primary_font = fonts()[0]
 
         if settings.value("geometry") is None:
             settings.setValue("geometry", self.geometry())
-        # else:
-        # self.setGeometry(settings.value("geometry"))
 
         if size == "Default (Autoscale)":
             log("Size set to Autoscale", True)
@@ -110,24 +110,13 @@ class SettingsWindow(QWidget):
         super().__init__()
 
         forced = check()
-
+        primary_font = fonts()[0]
         log_level = settings.value("log_level")
-
-        primary_font = QFontDatabase.applicationFontFamilies(QFontDatabase.addApplicationFont(':/fonts/Xolonium-Regular.otf'))[0]
 
         # Ensure opening of new window
         #self.menu = None
 
-        if forced:
-            self.setGeometry(settings.value("geometry"))
-            if settings.value("target size") is not None:
-                log(f'Forcing settings window to target size: {settings.value("target size")}', False)
-            else:
-                log("Uh oh, me no found target size", False)
-
-        else:
-            self.showMaximized()
-            log("Maximizing settings window", False)
+        initial_resize(self, 'settings window')
 
         self.setWindowTitle("VortIV - Settings")
         self.setWindowIcon(QIcon(":/icons/logo.jpg"))

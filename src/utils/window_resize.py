@@ -1,9 +1,23 @@
 from utils.logger import log
+from utils.window_check import check
 from PySide6.QtCore import QSettings
 
 settings = QSettings("Beyond Earth Studios", "VortV")
 
-def re_resize(target_window) -> None:
+def initial_resize(target_window, target_window_name) -> None:
+    forced = check()
+    if forced:
+        target_window.setGeometry(settings.value("geometry"))
+        if settings.value("target size") is not None:
+            log(f'Forcing {target_window_name} to target size: {settings.value("target size")}', False)
+        else:
+            log("Uh oh, me no found target size", False)
+
+    else:
+        target_window.showMaximized()
+        log(f'Maximizing {target_window_name} menu', False)
+
+def runtime_resize(target_window) -> None:
     """
     Resize a window during runtime after user has changed it in settings
     """

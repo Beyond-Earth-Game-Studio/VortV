@@ -1,11 +1,11 @@
 import resources
 from datetime import date
 
+from globals import fonts
 from utils.logger import log
 from utils.welcome import welcomemsg
 from utils.window_check import check
-from utils.window_resize import re_resize
-
+from utils.window_resize import initial_resize, runtime_resize
 from windows.settings_menu import SettingsWindow
 
 from PySide6.QtCore import Qt, QTimer, QSettings
@@ -18,14 +18,14 @@ class MainMenu(QWidget):
         log("Game window opened", False)
         self.maingame = Game()
         self.maingame.show()
-        re_resize(self.maingame)
+        runtime_resize(self.maingame)
         self.close()
 
     def open_settings(self):
         log("Settings window opened", False)
         self.settings_window = SettingsWindow()
         self.settings_window.show()
-        #re_resize(self.settings_window)
+        #runtime_resize(self.settings_window)
 
     def exit(self):
         self.settings_window = SettingsWindow()
@@ -39,28 +39,16 @@ class MainMenu(QWidget):
 
         super().__init__()
 
-        # init settings
-        settings = QSettings("Beyond Earth Studios", "VortV")
-
+        # init variables
         forced = check()
-
-        # font stuff
-        title_font = QFontDatabase.applicationFontFamilies(QFontDatabase.addApplicationFont(':/fonts/DiaryOfAn8BitMage.ttf'))[0]
+        title_font = fonts()[1]
+        settings = QSettings("Beyond Earth Studios", "VortV")
 
         # Ensure opening of new windows
         #self.settings_window = None
         #self.maingame = None
 
-        if forced:
-            self.setGeometry(settings.value("geometry"))
-            if settings.value("target size") is not None:
-                log(f'Forcing main menu to target size: {settings.value("target size")}', False)
-            else:
-                log("Uh oh, me no found target size", False)
-
-        else:
-            self.showMaximized()
-            log("Maximizing main menu", False)
+        initial_resize(self, 'main menu')
 
         self.setWindowTitle("VortIV - Main Menu")
         self.setWindowIcon(QIcon(":/icons/logo.jpg"))
