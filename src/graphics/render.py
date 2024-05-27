@@ -1,27 +1,29 @@
-
-
 import math
-from PySide6.QtWidgets import QGraphicsScene,QGraphicsView,QGraphicsPixmapItem
-from PySide6.QtGui import QImage,QPixmap
-import veiwport_window
+from PySide6.QtGui import QImage, QPixmap
+from PySide6.QtWidgets import QGraphicsPixmapItem
+
 class render_engine():
 
-    def __init__(self, screen_width, screen_height,texts,geometry,cam,veiwport,bg):
+    def __init__(self, screen_width, screen_height, textures, world_map, cam, viewport, bg):
         super().__init__()
         
-        self.world_map = geometry
+        self.bg = bg
+        self.cam = cam
+        self.viewport = viewport
+        self.world_map = world_map
+
         self.buffer = QImage(screen_height, screen_width, QImage.Format_ARGB32)
+        self.buffer_bits = self.buffer.bits()
         self.screen_width = screen_width
         self.screen_height = screen_height
-        self.veiwport = veiwport
-        self.cam = cam
-        self.bg = bg
-        self.buffer_bits = self.buffer.bits()
+
+
        
-        self.textures = texts
+        self.textures = textures
         self.texWidth = self.textures[0].width()
         self.texHeight = self.textures[0].height()
-        self.cell_and_floor = False
+
+        self.ceiling_and_floor = False
     
     def tick_frame(self):
         
@@ -36,14 +38,12 @@ class render_engine():
         fg.setOffset(0,200)
         fg = QGraphicsPixmapItem(pixmap)
         fg.setOffset(0,200)
-        #veiwport.scene().fuckFish()
+        #viewport.scene().fuckFish()
         return(fg,bg)
         
-        
-
     def render(self):
             #FLOOR CASTING
-            if(self.cell_and_floor ==True):
+            if (self.ceiling_and_floor == True):
 
                 for y in range(int(self.screen_height) ):
 

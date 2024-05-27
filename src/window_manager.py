@@ -6,6 +6,9 @@ from PySide6.QtCore import Qt
 from PySide6.QtGui import QPixmap
 from PySide6.QtWidgets import QSplashScreen
 
+from graphics.viewport import my_house
+from graphics.engine import engine_instance
+
 from windows.main_menu import MainMenu
 from windows.settings_menu import SettingsWindow
 
@@ -21,9 +24,9 @@ class WindowManager():
         splash_screen = QSplashScreen(splash)
         splash_screen.show()
         splash_screen.showMessage("Loading Assets", alignment=Qt.AlignBottom, color=Qt.white)
-        sleep(1)
+        #sleep(1)
         splash_screen.showMessage("Loading Game", alignment=Qt.AlignBottom, color=Qt.white)
-        sleep(0.5)
+        #sleep(0.5)
         self.main_menu = MainMenu()
         splash_screen.finish(self.main_menu)
 
@@ -42,6 +45,9 @@ class WindowManager():
         #self.main_menu = None
 
     def load_game(self):
-        self.main_game = Game()
-        self.main_menu.close()
-        self.main_game.show()
+        self.viewport = my_house()
+        active_instance = engine_instance("data/world_sections.csv", self.viewport)
+        active_instance.set_game_mode("explore")
+        active_instance.run()
+
+        self.viewport.show()
