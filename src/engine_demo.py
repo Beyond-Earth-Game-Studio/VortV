@@ -1,14 +1,14 @@
 import sys
 from PySide6.QtWidgets import QApplication
 
-from graphics.viewport import my_house
-from graphics.engine import engine_instance
+from graphics.viewport import MyHouse
+from graphics.engine import EngineInstance
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
  
-    viewport = my_house()
-    active_instance = engine_instance("data/world_sections.csv", viewport)
+    viewport = MyHouse()
+    active_instance = EngineInstance("data/world_sections.csv", viewport)
     active_instance.set_game_mode("explore")
     active_instance.run()
     

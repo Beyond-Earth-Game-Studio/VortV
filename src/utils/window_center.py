@@ -1,4 +1,4 @@
-def center(self):
+def center(self) -> None:
     """
     function to center a window - seems like it acts differently on linux
     """

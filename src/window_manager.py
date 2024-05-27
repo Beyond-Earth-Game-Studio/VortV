@@ -6,8 +6,8 @@ from PySide6.QtCore import Qt
 from PySide6.QtGui import QPixmap
 from PySide6.QtWidgets import QSplashScreen
 
-from graphics.viewport import my_house
-from graphics.engine import engine_instance
+from graphics.viewport import MyHouse
+from graphics.engine import EngineInstance
 
 from windows.main_menu import MainMenu
 from windows.settings_menu import SettingsWindow
@@ -33,6 +33,7 @@ class WindowManager():
     def open_menu(self):
         #self.main_menu = MainMenu() # this is only needed if you dereference it in open_settings
         self.main_menu.switch_window.connect(self.open_settings)
+        self.main_menu.open_game.connect(self.load_game)
         self.main_menu.show()
         runtime_resize(self.main_menu)
         #self.settings_window = None # seems to resize fine without dereferencing
@@ -45,9 +46,8 @@ class WindowManager():
         #self.main_menu = None
 
     def load_game(self):
-        self.viewport = my_house()
-        active_instance = engine_instance("data/world_sections.csv", self.viewport)
-        active_instance.set_game_mode("explore")
-        active_instance.run()
-
-        self.viewport.show()
+        self.active_viewport = MyHouse()
+        self.active_instance = EngineInstance("data/world_sections.csv", self.active_viewport)
+        self.active_instance.set_game_mode("explore")
+        self.active_instance.run()
+        #self.viewport.show()

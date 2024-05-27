@@ -2,28 +2,28 @@ import math
 from PySide6.QtGui import QImage, QPixmap
 from PySide6.QtWidgets import QGraphicsPixmapItem
 
-class render_engine():
+class RenderEngine():
 
-    def __init__(self, screen_width, screen_height, textures, world_map, cam, viewport, bg):
+    def __init__(self, screen_width, screen_height, textures, world_map, camera, viewport, bg):
         super().__init__()
         
+        # init class variables
         self.bg = bg
-        self.cam = cam
+        self.camera = camera
         self.viewport = viewport
         self.world_map = world_map
-
-        self.buffer = QImage(screen_height, screen_width, QImage.Format_ARGB32)
-        self.buffer_bits = self.buffer.bits()
+        self.ceiling_and_floor = False
         self.screen_width = screen_width
         self.screen_height = screen_height
 
+        # create buffer
+        self.buffer = QImage(screen_height, screen_width, QImage.Format_ARGB32)
+        self.buffer_bits = self.buffer.bits()
 
-       
+        # texture setup
         self.textures = textures
         self.texWidth = self.textures[0].width()
         self.texHeight = self.textures[0].height()
-
-        self.ceiling_and_floor = False
     
     def tick_frame(self):
         
@@ -53,11 +53,11 @@ class render_engine():
                         continue
                     rowDistance = posZ / (p)
 
-                    floorStepX = (rowDistance * (self.cam.dir_x + self.cam.plane_x - self.cam.dir_x + self.cam.plane_x)) / self.screen_width
-                    floorStepY = (rowDistance * (self.cam.dir_y + self.cam.plane_y - self.cam.dir_y + self.cam.plane_y)) / self.screen_width
+                    floorStepX = (rowDistance * (self.camera.dir_x + self.camera.plane_x - self.camera.dir_x + self.camera.plane_x)) / self.screen_width
+                    floorStepY = (rowDistance * (self.camera.dir_y + self.camera.plane_y - self.camera.dir_y + self.camera.plane_y)) / self.screen_width
 
-                    floorX = self.cam.player_pos_x + rowDistance * (self.cam.dir_x - self.cam.plane_x)
-                    floorY = self.cam.player_pos_y + rowDistance * (self.cam.dir_y - self.cam.plane_y)
+                    floorX = self.camera.player_pos_x + rowDistance * (self.camera.dir_x - self.camera.plane_x)
+                    floorY = self.camera.player_pos_y + rowDistance * (self.camera.dir_y - self.camera.plane_y)
 
                     for x in range(self.screen_width):
                         self.buffer_bits = self.buffer.bits()
@@ -84,39 +84,44 @@ class render_engine():
                    
             #RENDER WALLS!
             for x in range(self.screen_width):
+
                 self.camera_x = 2 * x / self.screen_width - 1
-                ray_dir_x = self.cam.dir_x + self.cam.plane_x * self.camera_x
-                ray_dir_y = self.cam.dir_y + self.cam.plane_y * self.camera_x
+                ray_dir_x = self.camera.dir_x + self.camera.plane_x * self.camera_x
+                ray_dir_y = self.camera.dir_y + self.camera.plane_y * self.camera_x
 
-                map_x = int(self.cam.player_pos_x)
-                map_y = int(self.cam.player_pos_y)
+                map_x = int(self.camera.player_pos_x)
+                map_y = int(self.camera.player_pos_y)
 
-                delta_dist_x = abs(1 / ray_dir_x+0.00000000001)
-                delta_dist_y = abs(1 / (ray_dir_y+0.0000000001))
+                delta_dist_x = abs(1 / ray_dir_x + 0.00000000001)
+                delta_dist_y = abs(1 / (ray_dir_y + 0.0000000001))
 
                 hit = 0
                 side = 0
 
                 if ray_dir_x < 0:
                     step_x = -1
-                    side_dist_x = (self.cam.player_pos_x - map_x) * delta_dist_x
+                    side_dist_x = (self.camera.player_pos_x - map_x) * delta_dist_x
+
                 else:
                     step_x = 1
-                    side_dist_x = (map_x + 1.0 - self.cam.player_pos_x) * delta_dist_x
+                    side_dist_x = (map_x + 1.0 - self.camera.player_pos_x) * delta_dist_x
 
                 if ray_dir_y < 0:
                     step_y = -1
-                    side_dist_y = (self.cam.player_pos_y - map_y) * delta_dist_y
+                    side_dist_y = (self.camera.player_pos_y - map_y) * delta_dist_y
+
                 else:
                     step_y = 1
-                    side_dist_y = (map_y + 1.0 - self.cam.player_pos_y) * delta_dist_y
+                    side_dist_y = (map_y + 1.0 - self.camera.player_pos_y) * delta_dist_y
 
                 # Perform DDA
                 while not hit:
+
                     if side_dist_x < side_dist_y:
                         side_dist_x += delta_dist_x
                         map_x += step_x
                         side = 0
+
                     else:
                         side_dist_y += delta_dist_y
                         map_y += step_y
@@ -127,11 +132,13 @@ class render_engine():
 
                 # Calculate distance projected on self.camera direction
                 if side == 0:
-                    perp_wall_dist = (map_x - self.cam.player_pos_x + (1 - step_x) / 2) / ray_dir_x
-                    wall_x = self.cam.player_pos_y + perp_wall_dist * ray_dir_y
+                    perp_wall_dist = (map_x - self.camera.player_pos_x + (1 - step_x) / 2) / ray_dir_x
+                    wall_x = self.camera.player_pos_y + perp_wall_dist * ray_dir_y
+
                 else:
-                    perp_wall_dist = (map_y - self.cam.player_pos_y + (1 - step_y) / 2) / ray_dir_y
-                    wall_x = self.cam.player_pos_x + perp_wall_dist * ray_dir_x
+                    perp_wall_dist = (map_y - self.camera.player_pos_y + (1 - step_y) / 2) / ray_dir_y
+                    wall_x = self.camera.player_pos_x + perp_wall_dist * ray_dir_x
+
                 wall_x -= int(wall_x)
 
                 # Calculate value of tex_x
@@ -167,6 +174,7 @@ class render_engine():
                     
                         modified_color = int.from_bytes(modified_color, byteorder='little')
                         self.buffer.setPixel(x,y,modified_color)
+
                     else:
                         color=int.from_bytes(color,byteorder="little")
                         self.buffer.setPixel(x,y,color)

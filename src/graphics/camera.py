@@ -7,7 +7,7 @@ class Direction(Enum):
     EAST = (1, 0)
     WEST = (-1, 0)
 
-class player_camera:
+class PlayerCamera:
 
     def __init__(self):
         
@@ -74,6 +74,6 @@ class player_camera:
         else:
             return None
         
-    def set_cam_geo(self, geometry):
-          self.world_map = geometry
+    def set_camera_map(self, world_map):
+          self.world_map = world_map
      

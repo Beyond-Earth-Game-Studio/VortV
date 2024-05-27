@@ -1,9 +1,12 @@
+import resources
+from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QGraphicsScene, QGraphicsView
 
-class my_house(QGraphicsView):
+class MyHouse(QGraphicsView):
 
     def __init__(self):
         super().__init__()
+        self.setWindowIcon(QIcon(":/icons/logo.jpg"))
         self.setWindowTitle("my_house.wad")
         self.setScene(QGraphicsScene())  
         self.showMaximized()
@@ -13,5 +16,5 @@ class my_house(QGraphicsView):
         key = event.key()
         self.cam.move(key)
 
-    def set_cam(self, cam):
+    def set_camera(self, cam):
            self.cam = cam
