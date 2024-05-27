@@ -3,7 +3,7 @@ import resources
 
 from datetime import datetime
 
-from globals import fonts
+from globals import fonts, scale
 
 from utils.style import stylize
 from utils.logger import logging_init, logging_exit, log
@@ -30,8 +30,9 @@ if __name__ == "__main__":
         # windows are never resized on start
         settings.setValue("resized", 0)
 
-        # init and clear log
+        # init stuff
         logging_init(True)
+        log(f'Render scale: {scale()}', True)
 
         # font stuff
         primary_font = fonts()[0]

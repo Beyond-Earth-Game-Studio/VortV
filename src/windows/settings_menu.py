@@ -1,6 +1,7 @@
 import resources
 
-from globals import fonts
+from globals import fonts, index_check
+
 from utils.logger import log
 from utils.window_check import check
 from utils.window_center import center
@@ -16,6 +17,11 @@ settings = QSettings("Beyond Earth Studios", "VortV")
 class SettingsWindow(QWidget):
 
     switch_window = Signal(None)
+
+    def open_menu(self):
+        log("Menu window opened", False)
+        self.switch_window.emit()
+        self.close()
 
     def set_log(self):
 
@@ -34,14 +40,7 @@ class SettingsWindow(QWidget):
                 log("Setting log level to 'Error' - will take effect on next restart", True)
             settings.setValue("log_level", "Error")
 
-    def open_menu(self):
-        log("Menu window opened", False)
-        self.switch_window.emit()
-        self.close()
-
     def window_size(self, size):
-
-        primary_font = fonts()[0]
 
         if settings.value("geometry") is None:
             settings.setValue("geometry", self.geometry())
@@ -71,47 +70,95 @@ class SettingsWindow(QWidget):
             self.resize(3840, 2160)
             settings.setValue("forced size", 1)
 
-        forced = check(False)
-
-        if forced:
+        if self.forced:
             center(self)  # seems to screw with autoscale on linux
             log("Centering window", False)
 
         dlg = QMessageBox(self)
         dlg.setWindowTitle("Confirm")
         dlg.setText("Confirm Changes?")
-        dlg.setFont(QFont(primary_font, 10))
+        dlg.setFont(QFont(self.primary_font, 10))
         dlg.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
         dlg.setIcon(QMessageBox.Question)
         dlg.show()
         center(dlg)
         confirm = dlg.exec()
 
-        if confirm == QMessageBox.Yes and forced:
+        if confirm == QMessageBox.Yes and self.forced:
             log(f'Size change confirmed: {size}', True)
             settings.setValue("geometry", self.geometry())
             settings.setValue("forced size", 1)
             settings.setValue("target size", size)
             center(self)
             settings.setValue("resized", 1)
+            settings.setValue("Size Index", self.display.currentIndex())
+            print(settings.value("Size Index"))
 
-        if confirm == QMessageBox.Yes and not forced:
+        if confirm == QMessageBox.Yes and not self.forced:
             log("Size change confirmed: Autoscale", True)
             settings.setValue("forced size", 0)
             settings.setValue("target size", "Autoscale")
             settings.setValue("resized", 1)
+            settings.setValue("Size Index", self.display.currentIndex())
+            print(settings.value("Size Index"))
 
         if confirm == QMessageBox.No:
             log("Size change cancelled", True)
             self.setGeometry(settings.value("geometry"))
             center(self)
 
+    def resolution(self, scale):
+
+        old_scale = settings.value("scale")
+
+        if scale == "Ultra":
+            log("Scale set to Ultra", True)
+            settings.setValue("scale", (350, 350))
+
+        if scale == "High":
+            log("Scale set to High", True)
+            settings.setValue("scale", (250, 250))
+
+        if scale == "Medium":
+            log("Scale set to Medium", True)
+            settings.setValue("scale", (200, 200))
+
+        if scale == "Low":
+            log("Scale set to Low", True)
+            settings.setValue("scale", (150, 150))
+
+        if scale == "HP_Destroyer_696969":
+            log("Scale set to HP_Destroyer_696969", True)
+            settings.setValue("scale", (50, 50))
+
+        forced = check(False)
+
+        dlg = QMessageBox(self)
+        dlg.setWindowTitle("Confirm")
+        dlg.setText("Confirm Changes?")
+        dlg.setFont(QFont(self.primary_font, 10))
+        dlg.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+        dlg.setIcon(QMessageBox.Question)
+        dlg.show()
+        center(dlg)
+        confirm = dlg.exec()
+
+        if confirm == QMessageBox.Yes:
+            log(f'Scale change confirmed: {settings.value("scale")}', True)
+            settings.setValue("Scale Index", self.display2.currentIndex())
+            print(settings.value("Scale Index"))
+
+        if confirm == QMessageBox.No:
+            log("Scale change cancelled", True)
+            settings.setValue("scale", old_scale)
+
     def __init__(self):
 
         super().__init__()
 
-        forced = check(False)
-        primary_font = fonts()[0]
+        index = index_check()
+        self.forced = check(False)
+        self.primary_font = fonts()[0]
         log_level = settings.value("log_level")
 
         initial_resize(self, 'settings window')
@@ -121,18 +168,32 @@ class SettingsWindow(QWidget):
         self.setObjectName("SettingsWindow")
         layout = QVBoxLayout()
         box_layout = QVBoxLayout()
+        box1_layout = QVBoxLayout()
         box2_layout = QVBoxLayout()
 
         box = QGroupBox("Force Display Size")
 
-        display = QComboBox()
-        display.addItems(["", "Default (Autoscale)", "700x450", "1920x1080", "2880x1800", "3840x2160"])
-        display.setFont(QFont(primary_font, 10))
-        display.currentTextChanged.connect(self.window_size)
-        box_layout.addWidget(display)
+        self.display = QComboBox()
+        self.display.addItems(["", "Default (Autoscale)", "700x450", "1920x1080", "2880x1800", "3840x2160"])
+        self.display.setFont(QFont(self.primary_font, 10))
+        self.display.setCurrentIndex(index[0])
+        self.display.currentTextChanged.connect(self.window_size)
+        box_layout.addWidget(self.display)
 
         box.setLayout(box_layout)
         layout.addWidget(box)
+
+        box1 = QGroupBox("Render Scale")
+
+        self.display2 = QComboBox()
+        self.display2.addItems(["", "Ultra", "High", "Medium", "Low", "HP_Destroyer_696969"])
+        self.display2.setFont(QFont(self.primary_font, 10))
+        self.display2.setCurrentIndex(index[1])
+        self.display2.currentTextChanged.connect(self.resolution)
+        box1_layout.addWidget(self.display2)
+
+        box1.setLayout(box1_layout)
+        layout.addWidget(box1)
 
         box2 = QGroupBox("Log Level", self)
         radio1 = QRadioButton("Verbose", self)
