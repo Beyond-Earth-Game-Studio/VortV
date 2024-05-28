@@ -28,11 +28,10 @@ if __name__ == "__main__":
         settings = QSettings()
 
         # windows are never resized on start
-        settings.setValue("resized", 0)
+        settings.setValue("Resized_During_Runtime", 0)
 
-        # init stuff
+        # init logging
         logging_init(True)
-        log(f'Render scale: {scale()}', True)
 
         # font stuff
         primary_font = fonts()[0]

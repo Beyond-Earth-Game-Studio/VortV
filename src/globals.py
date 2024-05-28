@@ -1,6 +1,9 @@
 import resources
+from utils.logger import log
 from PySide6.QtCore import QSettings
 from PySide6.QtGui import QFontDatabase
+
+settings = QSettings("Beyond Earth Studios", "VortV")
 
 def fonts() -> tuple[str, str]:
     """
@@ -11,42 +14,46 @@ def fonts() -> tuple[str, str]:
 
     return primary, title
 
-def scale() -> tuple[int, int]:
+def scale(init: bool) -> tuple[int, int]:
     """
-    Checks if scale has been set on first run
+    Checks render scale
     """
-    settings = QSettings("Beyond Earth Studios", "VortV")
-
     try:
-        resolution = settings.value("Render Scale")
+        resolution = int(settings.value("Render_Scale"))
 
     except:
         resolution = None
 
-    if resolution is None or (None, None):
-        settings.setValue("scale", (200, 200))
-        resolution = settings.value("Render Scale")
+    if resolution is None:
+        settings.setValue("Render_Scale", 200)
+        resolution = int(settings.value("Render_Scale"))
 
-    return resolution
+    if init:
+        log(f'Render scale: {resolution}', False)
+
+    return resolution, resolution
 
 def index_check() -> tuple[int, int]:
     """
     Checks settings QComboBox indexes
     """
-    settings = QSettings("Beyond Earth Studios", "VortV")
-
     try:
-        index = (int(settings.value("Size Index")), int(settings.value("Scale Index")))
-        print(index)
-        print(type(index))
+        size_index = settings.value("Size_Index")
 
     except:
-        index = None
+        size_index = None
 
-    if index is None: #or tuple[None, None]: # or (int, None) or (None, int):
-        settings.setValue("Size Index", 0)
-        settings.setValue("Scale Index", 0)
-        index = (settings.value("Size Index"), settings.value("Scale Index"))
+    try:
+        scale_index = settings.value("Scale_Index")
 
-    print(index)
-    return index
+    except:
+        scale_index = None
+
+    # ... == (None, None) matches all tuples.... 
+    if size_index is None:
+        settings.setValue("Size_Index", 0)
+
+    if scale_index is None:
+        settings.setValue("Scale_Index", 0)
+
+    return (int(settings.value("Size_Index")), int(settings.value("Scale_Index")))

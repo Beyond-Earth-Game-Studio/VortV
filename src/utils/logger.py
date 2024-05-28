@@ -3,11 +3,15 @@ from PySide6.QtCore import QSettings
 
 settings = QSettings("Beyond Earth Studios", "VortV")
 
-log_level = settings.value("log_level")
+try:
+    log_level = settings.value("Log_Level")
+
+except:
+    log_level = None
 
 if log_level is None:
-    settings.setValue("log_level", "Verbose")
-    log_level = settings.value("log_level")
+    settings.setValue("Log_Level", "Verbose")
+    log_level = settings.value("Log_Level")
 
 def logging_init(clear: bool) -> None:
     """
@@ -37,8 +41,38 @@ def log(msg: str, warn: bool) -> None:
     """
     with open("logs/game_log.txt", "a") as logfile:
 
-        if log_level == "Verbose":
+        if log_level == "Verbose" and not warn:
             logfile.write(f'[Verbose] - [{datetime.now().strftime("%H:%M:%S")}]: {msg}\n')
+
+        if log_level == "Verbose" and warn:
+            logfile.write(f'[Warning] - [{datetime.now().strftime("%H:%M:%S")}]: {msg}\n')
 
         if log_level == "Warn" and warn:
             logfile.write(f'[Warning] - [{datetime.now().strftime("%H:%M:%S")}]: {msg}\n')
+
+def change_log(selected_log_level: str, box_is_checked: bool) -> str:
+    """
+    Function to change log level
+    """
+    if selected_log_level == "Verbose" and box_is_checked:
+
+        if selected_log_level != settings.value("Log_Level"):
+            log("Setting log level to 'Verbose' - will take effect on next restart", True)
+
+        settings.setValue("Log_Level", "Verbose")
+
+    if selected_log_level == "Warn" and box_is_checked:
+
+        if selected_log_level != settings.value("Log_Level"):
+            log("Setting log level to 'Warn' - will take effect on next restart", True)
+
+        settings.setValue("Log_Level", "Warn")
+
+    if selected_log_level == "Error" and box_is_checked:
+
+        if selected_log_level != settings.value("Log_Level"):
+            log("Setting log level to 'Error' - will take effect on next restart", True)
+
+        settings.setValue("Log_Level", "Error")
+
+    return settings.value("Log_Level")

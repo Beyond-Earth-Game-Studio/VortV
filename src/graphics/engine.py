@@ -1,6 +1,8 @@
 import sys
 import math
 
+from globals import scale
+
 from PySide6.QtCore import QTimer
 from PySide6.QtCore import QSettings
 from PySide6.QtGui import QImage, QPixmap, QKeyEvent
@@ -19,10 +21,8 @@ class EngineInstance():
         self.path = data_path
         self.viewport = viewport
 
-        settings = QSettings("Beyond Earth Studios", "VortV")
-
         # non-scaled resolution (0-300ish)
-        self.screen_width, self.screen_height = settings.value("scale")
+        self.screen_width, self.screen_height = scale(False)
     
     def set_game_mode(self, mode):
        self.mode = mode
