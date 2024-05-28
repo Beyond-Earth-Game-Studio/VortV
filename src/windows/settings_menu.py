@@ -1,10 +1,12 @@
 import resources
 
-from globals import fonts, index_check
+from globals import fonts, index_check, screen_size_check
 
-from utils.logger import log, change_log
+
 from utils.window_check import check
+from utils.dialog import create_dialog
 from utils.window_center import center
+from utils.logger import log, change_log
 from utils.window_resize import initial_resize
 
 from PySide6.QtGui import QIcon, QFont
@@ -27,9 +29,10 @@ class SettingsWindow(QWidget):
 
         super().__init__()
 
-        index = index_check()
+        self.index = index_check()
         self.primary_font = fonts()[0]
         log_level = settings.value("Log_Level")
+        print(screen_size_check())
 
         initial_resize(self, 'settings window')
 
@@ -45,9 +48,9 @@ class SettingsWindow(QWidget):
         box = QGroupBox("Force Display Size")
 
         self.display = QComboBox()
-        self.display.addItems(["", "Default (Autoscale)", "700x450", "1920x1080", "2880x1800", "3840x2160"])
+        self.display.addItems(["Default (Autoscale)", "700x450", "1920x1080", "2880x1800", "3840x2160"])
         self.display.setFont(QFont(self.primary_font, 10))
-        self.display.setCurrentIndex(index[0])
+        self.display.setCurrentIndex(self.index[0])
         self.display.currentTextChanged.connect(self.window_size)
         box_layout.addWidget(self.display)
 
@@ -57,9 +60,9 @@ class SettingsWindow(QWidget):
         box1 = QGroupBox("Render Scale")
 
         self.display2 = QComboBox()
-        self.display2.addItems(["", "Ultra", "High", "Medium", "Low", "HP_Destroyer_696969"])
+        self.display2.addItems(["Ultra", "High", "Medium", "Low", "HP_Destroyer_696969"])
         self.display2.setFont(QFont(self.primary_font, 10))
-        self.display2.setCurrentIndex(index[1])
+        self.display2.setCurrentIndex(self.index[1])
         self.display2.currentTextChanged.connect(self.resolution)
         box1_layout.addWidget(self.display2)
 
@@ -105,7 +108,7 @@ class SettingsWindow(QWidget):
 
         change_log(selected_log_level, box_is_checked)
 
-    def window_size(self, size):
+    def window_size(self, size: str):
 
         if settings.value("Window_Geometry") is None:
             settings.setValue("Window_Geometry", self.geometry())
@@ -141,15 +144,7 @@ class SettingsWindow(QWidget):
             center(self)  # seems to screw with autoscale on linux
             log("Centering window", False)
 
-        dlg = QMessageBox(self)
-        dlg.setWindowTitle("Confirm")
-        dlg.setText("Confirm Changes?")
-        dlg.setFont(QFont(self.primary_font, 10))
-        dlg.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
-        dlg.setIcon(QMessageBox.Question)
-        dlg.show()
-        center(dlg)
-        confirm = dlg.exec()
+        confirm = create_dialog(self)
 
         if confirm == QMessageBox.Yes and self.forced:
             log(f'Size change confirmed: {size}', True)
@@ -169,10 +164,13 @@ class SettingsWindow(QWidget):
 
         if confirm == QMessageBox.No:
             log("Size change cancelled", True)
+            self.display.blockSignals(True)
+            self.display.setCurrentIndex(self.index[0])
+            self.display.blockSignals(False)
             self.setGeometry(settings.value("Window_Geometry"))
             center(self)
 
-    def resolution(self, scale):
+    def resolution(self, scale: str):
 
         old_scale = settings.value("Render_Scale")
 
@@ -196,15 +194,7 @@ class SettingsWindow(QWidget):
             log("Scale set to HP_Destroyer_696969", True)
             settings.setValue("Render_Scale", 50)
 
-        dlg = QMessageBox(self)
-        dlg.setWindowTitle("Confirm")
-        dlg.setText("Confirm Changes?")
-        dlg.setFont(QFont(self.primary_font, 10))
-        dlg.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
-        dlg.setIcon(QMessageBox.Question)
-        dlg.show()
-        center(dlg)
-        confirm = dlg.exec()
+        confirm = create_dialog(self)
 
         if confirm == QMessageBox.Yes:
             log(f'Render scale change confirmed: {settings.value("Render_Scale")}', True)
@@ -212,4 +202,7 @@ class SettingsWindow(QWidget):
 
         if confirm == QMessageBox.No:
             log("Render scale change cancelled", True)
+            self.display2.blockSignals(True)
+            self.display2.setCurrentIndex(self.index[1])
+            self.display2.blockSignals(False)
             settings.setValue("Render_Scale", old_scale)

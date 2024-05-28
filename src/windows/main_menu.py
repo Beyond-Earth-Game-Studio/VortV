@@ -1,14 +1,11 @@
 import resources
 from datetime import date
 
-from globals import fonts, scale
+from globals import fonts
 
 from utils.logger import log
 from utils.welcome import welcomemsg
-from utils.window_check import check
-from utils.window_resize import initial_resize, runtime_resize
-
-from windows.settings_menu import SettingsWindow
+from utils.window_resize import initial_resize
 
 from PySide6.QtGui import QIcon, QFont
 from PySide6.QtCore import Qt, QTimer, QSettings, Signal
@@ -36,10 +33,6 @@ class MainMenu(QWidget):
     def __init__(self):
 
         super().__init__()
-
-        # startup
-        forced = check(True)
-        render_scale = scale(True)
 
         # init variables
         title_font = fonts()[1]
