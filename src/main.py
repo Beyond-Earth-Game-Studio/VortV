@@ -30,7 +30,7 @@ if __name__ == "__main__":
         # windows are never resized on start
         settings.setValue("Resized_During_Runtime", 0)
 
-        # init logging
+        # init and clear log
         logging_init(True)
 
         # startup checks (needs logging)

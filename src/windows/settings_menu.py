@@ -2,7 +2,6 @@ import resources
 
 from globals import fonts, index_check, screen_size_check
 
-
 from utils.window_check import check
 from utils.dialog import create_dialog
 from utils.window_center import center
@@ -11,8 +10,7 @@ from utils.window_resize import initial_resize
 
 from PySide6.QtGui import QIcon, QFont
 from PySide6.QtCore import Qt, QSettings, Signal
-from PySide6.QtWidgets import QVBoxLayout, QWidget, QPushButton, QRadioButton, QComboBox, QMessageBox, \
-    QGroupBox
+from PySide6.QtWidgets import QVBoxLayout, QWidget, QPushButton, QRadioButton, QComboBox, QMessageBox, QGroupBox
 
 settings = QSettings("Beyond Earth Studios", "VortV")
 
@@ -32,7 +30,6 @@ class SettingsWindow(QWidget):
         self.index = index_check()
         self.primary_font = fonts()[0]
         log_level = settings.value("Log_Level")
-        print(screen_size_check())
 
         initial_resize(self, 'settings window')
 
@@ -48,7 +45,7 @@ class SettingsWindow(QWidget):
         box = QGroupBox("Force Display Size")
 
         self.display = QComboBox()
-        self.display.addItems(["Default (Autoscale)", "700x450", "1920x1080", "2880x1800", "3840x2160"])
+        self.display.addItems(["Default (Maximized)", "Tiny", "Small", "Medium", "Large"])
         self.display.setFont(QFont(self.primary_font, 10))
         self.display.setCurrentIndex(self.index[0])
         self.display.currentTextChanged.connect(self.window_size)
@@ -110,52 +107,50 @@ class SettingsWindow(QWidget):
 
     def window_size(self, size: str):
 
-        if settings.value("Window_Geometry") is None:
-            settings.setValue("Window_Geometry", self.geometry())
-
-        if size == "Default (Autoscale)":
+        if size == "Default (Maximized)":
             log("Size set to Autoscale", True)
             self.showMaximized()
             settings.setValue("Is_Forced_Size", 0)
 
-        if size == "700x450":
-            log("Size set to 700x450", True)
-            self.resize(700, 450)
+        if size == "Tiny":
+            self.resize(screen_size_check()[0] / 3, screen_size_check()[1] / 3)
+            log(f'Size set to {self.geometry().width()}x{self.geometry().height()} (Tiny)', True)
             settings.setValue("Is_Forced_Size", 1)
 
-        if size == "1920x1080":
-            log("Size set to 1920x1080", True)
-            self.resize(1920, 1080)
+        if size == "Small":
+            self.resize(screen_size_check()[0] / 2, screen_size_check()[1] / 2)
+            log(f'Size set to {self.geometry().width()}x{self.geometry().height()} (Small)', True)
             settings.setValue("Is_Forced_Size", 1)
 
-        if size == "2880x1800":
-            log("Size set to 2880x1800", True)
-            self.resize(2880, 1800)
+        if size == "Medium":
+            self.resize(screen_size_check()[0] / 1.5, screen_size_check()[1] / 1.5)
+            log(f'Size set to {self.geometry().width()}x{self.geometry().height()} (Medium)', True)
             settings.setValue("Is_Forced_Size", 1)
 
-        if size == "3840x2160":
-            log("Size set to 3840x2160", True)
-            self.resize(3840, 2160)
+        if size == "Large":
+            self.resize(screen_size_check()[0] / 1.25, screen_size_check()[1] / 1.25)
+            log(f'Size set to {self.geometry().width()}x{self.geometry().height()} (Large)', True)
             settings.setValue("Is_Forced_Size", 1)
 
-        self.forced = check(False) # this needs to be here to poll for changes.. duh
+        forced = check(False) # this needs to be here to poll for changes.. duh
 
-        if self.forced:
+        if forced:
             center(self)  # seems to screw with autoscale on linux
             log("Centering window", False)
 
         confirm = create_dialog(self)
 
-        if confirm == QMessageBox.Yes and self.forced:
-            log(f'Size change confirmed: {size}', True)
+        if confirm == QMessageBox.Yes and forced:
+            log(f'Size change confirmed: {self.geometry().width()}x{self.geometry().height()}', True)
             settings.setValue("Window_Geometry", self.geometry())
             settings.setValue("Is_Forced_Size", 1)
-            settings.setValue("Target_Size", size)
-            center(self)
+            settings.setValue("Target_Size", f'{self.geometry().width()}x{self.geometry().height()}')
             settings.setValue("Resized_During_Runtime", 1)
             settings.setValue("Size_Index", self.display.currentIndex())
+            center(self)
 
-        if confirm == QMessageBox.Yes and not self.forced:
+
+        if confirm == QMessageBox.Yes and not forced:
             log("Size change confirmed: Autoscale", True)
             settings.setValue("Is_Forced_Size", 0)
             settings.setValue("Target_Size", "Autoscale")
