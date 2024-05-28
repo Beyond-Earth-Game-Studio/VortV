@@ -28,7 +28,6 @@ class SettingsWindow(QWidget):
         super().__init__()
 
         index = index_check()
-        self.forced = check(False)
         self.primary_font = fonts()[0]
         log_level = settings.value("Log_Level")
 
@@ -37,7 +36,7 @@ class SettingsWindow(QWidget):
         self.setWindowTitle("VortIV - Settings")
         self.setWindowIcon(QIcon(":/icons/logo.jpg"))
         self.setObjectName("SettingsWindow")
-        
+
         layout = QVBoxLayout()
         box_layout = QVBoxLayout()
         box1_layout = QVBoxLayout()
@@ -67,9 +66,9 @@ class SettingsWindow(QWidget):
         box1.setLayout(box1_layout)
         layout.addWidget(box1)
 
-        box2 = QGroupBox("Log Level", self)
-        radio1 = QRadioButton("Verbose", self)
-        radio2 = QRadioButton("Warn", self)
+        box2 = QGroupBox("Log Level")
+        radio1 = QRadioButton("Verbose")
+        radio2 = QRadioButton("Warn")
         radio3 = QRadioButton("Error")
         radio1.toggled.connect(self.set_log)
         radio2.toggled.connect(self.set_log)
@@ -212,5 +211,5 @@ class SettingsWindow(QWidget):
             settings.setValue("Scale_Index", self.display2.currentIndex())
 
         if confirm == QMessageBox.No:
-            log("Render scale cale change cancelled", True)
+            log("Render scale change cancelled", True)
             settings.setValue("Render_Scale", old_scale)
