@@ -2,11 +2,10 @@ import resources
 from datetime import date
 
 from globals import fonts
+
 from utils.logger import log
 from utils.welcome import welcomemsg
-from utils.window_check import check
-from utils.window_resize import initial_resize, runtime_resize
-from windows.settings_menu import SettingsWindow
+from utils.window_resize import initial_resize
 
 from PySide6.QtGui import QIcon, QFont
 from PySide6.QtCore import Qt, QTimer, QSettings, Signal
@@ -31,15 +30,11 @@ class MainMenu(QWidget):
         log("User requested exit", True)
         self.close()
 
-    def refresh(self):
-        self.label.setText(welcomemsg())
-
     def __init__(self):
 
         super().__init__()
 
         # init variables
-        forced = check(True)
         title_font = fonts()[1]
         settings = QSettings("Beyond Earth Studios", "VortV")
 
@@ -50,40 +45,42 @@ class MainMenu(QWidget):
         self.setObjectName("MainMenu")
 
         layout = QVBoxLayout()
-
-        self.timer = QTimer(self)
-        self.timer.timeout.connect(self.refresh)
-        self.timer.start(1000)
-
+        
         layout.addSpacing(50)
 
-        self.label = QLabel(welcomemsg())
-        self.label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.label.setFont(QFont(title_font, 30))
-        layout.addWidget(self.label)
+        self.title = QLabel(welcomemsg())
+        self.title.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.title.setFont(QFont(title_font, 30))
+        layout.addWidget(self.title)
 
-        button = QPushButton("Play")
-        button.setFixedSize(400, 50)
-        button.setObjectName("MenuButton")
-        button.clicked.connect(self.load_game)
-        layout.addWidget(button, alignment=Qt.AlignmentFlag.AlignCenter)
+        play_button = QPushButton("Play")
+        play_button.setFixedSize(400, 50)
+        play_button.setObjectName("MenuButton")
+        play_button.clicked.connect(self.load_game)
+        layout.addWidget(play_button, alignment=Qt.AlignmentFlag.AlignCenter)
 
-        button2 = QPushButton("Settings")
-        button2.setFixedSize(400, 50)
-        button2.setObjectName("MenuButton")
-        button2.clicked.connect(self.open_settings)
-        layout.addWidget(button2, alignment=Qt.AlignmentFlag.AlignCenter)
+        settings_button = QPushButton("Settings")
+        settings_button.setFixedSize(400, 50)
+        settings_button.setObjectName("MenuButton")
+        settings_button.clicked.connect(self.open_settings)
+        layout.addWidget(settings_button, alignment=Qt.AlignmentFlag.AlignCenter)
 
-        button3 = QPushButton("Quit")
-        button3.setFixedSize(400, 50)
-        button3.setObjectName("MenuButton")
-        button3.clicked.connect(self.exit)
-        layout.addWidget(button3, alignment=Qt.AlignmentFlag.AlignCenter)
+        exit_button = QPushButton("Quit")
+        exit_button.setFixedSize(400, 50)
+        exit_button.setObjectName("MenuButton")
+        exit_button.clicked.connect(self.exit)
+        layout.addWidget(exit_button, alignment=Qt.AlignmentFlag.AlignCenter)
 
         self.copyright = QLabel(f'Copyright (c) {date.today().year} Beyond Earth Studios. All rights reserved.')
         self.copyright.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.copyright.setFont(QFont(title_font, 10))
         layout.addWidget(self.copyright)
 
+        self.timer = QTimer(self)
+        self.timer.timeout.connect(self.title_msg_refresh)
+        self.timer.start(1000)
+
         self.setLayout(layout)
 
+    def title_msg_refresh(self):
+        self.title.setText(welcomemsg())

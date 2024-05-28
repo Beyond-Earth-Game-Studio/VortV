@@ -1,9 +1,7 @@
-import sys
-import math
+from globals import scale
 
 from PySide6.QtCore import QTimer
-from PySide6.QtGui import QImage,QPixmap,QKeyEvent
-from PySide6.QtWidgets import QGraphicsScene,QGraphicsView,QGraphicsPixmapItem,QWidget,QApplication
+from PySide6.QtWidgets import QGraphicsScene
 
 from graphics.VVAD_manager import VVAD
 from graphics.camera import PlayerCamera
@@ -18,9 +16,8 @@ class EngineInstance():
         self.path = data_path
         self.viewport = viewport
 
-        # non-scaled resolution
-        self.screen_width = 225
-        self.screen_height = 225
+        # non-scaled resolution (0-300ish)
+        self.screen_width, self.screen_height = scale(False)
     
     def set_game_mode(self, mode):
        self.mode = mode

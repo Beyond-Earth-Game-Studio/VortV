@@ -31,19 +31,19 @@ class WindowManager():
         splash_screen.finish(self.main_menu)
 
     def open_menu(self):
-        #self.main_menu = MainMenu() # this is only needed if you dereference it in open_settings
+        self.main_menu = MainMenu() # this is only needed if you dereference it in open_settings
         self.main_menu.switch_window.connect(self.open_settings)
         self.main_menu.open_game.connect(self.load_game)
         self.main_menu.show()
         runtime_resize(self.main_menu)
-        #self.settings_window = None # seems to resize fine without dereferencing
+        self.settings_window = None # [B]inux needs the dereferences
 
     def open_settings(self):
         self.settings_window = SettingsWindow()
         self.settings_window.switch_window.connect(self.open_menu)
         self.settings_window.show()
         runtime_resize(self.settings_window)
-        #self.main_menu = None
+        self.main_menu = None
 
     def load_game(self):
         self.active_viewport = MyHouse()
