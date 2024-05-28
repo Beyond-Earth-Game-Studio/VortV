@@ -46,6 +46,18 @@ if __name__ == "__main__":
         window_manager.run_splash()
         window_manager.open_menu()
 
+        print(app.primaryScreen().size().toTuple()) # laptop is 2880 x 1880 -> 1440 x 900 (2x DPI Scaling)
+
+        for scrn in app.screens():
+            print(f'Name: {scrn.name()}')
+            print(f'Index: {app.screens().index(scrn)}')
+            print('Actual size')
+            print(f'width      : {scrn.size().width()}')
+            print(f'height     : {scrn.size().height()}')
+            print('Available size')
+            print(f'width      : {scrn.availableSize().width()}')
+            print(f'height     : {scrn.availableSize().height()}')
+
         # run
         app.exec()
 
