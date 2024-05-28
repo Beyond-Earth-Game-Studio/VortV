@@ -107,6 +107,10 @@ class SettingsWindow(QWidget):
 
     def window_size(self, size: str):
 
+        # debating where to put this... 
+        if settings.value("geometry") is None:
+            settings.setValue("geometry", self.geometry())
+
         if size == "Default (Maximized)":
             log("Size set to Autoscale", True)
             self.showMaximized()

@@ -16,6 +16,8 @@ def fonts() -> tuple[str, str]:
     return primary, title
 
 def startup_checks(app) -> bool:
+    # should add a check for if forced but no value for settings.value("Window_Geometry") cuz something bugged
+
     # laptop is 2880 x 1880 -> 1440 x 900 (2x DPI Scaling)
     # pc is 3840 x 2160 -> 1920 x 1080 (also 2x Scaling)
     global screen_size 

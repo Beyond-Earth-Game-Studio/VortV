@@ -3,8 +3,7 @@ from csv import reader as csvreader
 
 from utils.logger import log
 
-from PySide6.QtGui import QImage,QPixmap
-from PySide6.QtWidgets import QGraphicsPixmapItem
+from PySide6.QtGui import QImage, QPixmap
 
 class Direction(Enum):
     NORTH = (0, 1)
