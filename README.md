@@ -4,7 +4,7 @@ VortV is an in-development game engine written in Python using [PySide6](https:/
 ## Installation
 Executables are provided every tagged pre-release. Run at your own risk and be ready for bugs.  
 
-Full installers will be provided when we are have more of a finished product.
+Full installers will be provided when we have more of a finished product.
 
 ## Building from source
 Packages are built with [pyside6-deploy](https://doc.qt.io/qtforpython-6/deployment/deployment-pyside6-deploy.html), with resources compiled using [pyside6-rcc](https://doc.qt.io/qtforpython-6/tools/pyside-rcc.html)
