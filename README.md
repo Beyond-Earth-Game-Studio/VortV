@@ -17,6 +17,10 @@ Activate your venv
 ```
 source venv/bin/activate
 ```
+or
+```
+venv/Scripts/activate.ps1
+```
 Install dependancies
 ```
 pip install pyside6
